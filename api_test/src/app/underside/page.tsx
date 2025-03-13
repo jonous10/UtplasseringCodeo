@@ -49,9 +49,7 @@ export default function Home() {
                             data[0]?.phonetics.length > 0 ? data[0]?.phonetics.map((p: any, index: number) => {
                                 return <p
                                 key={index}
-                                className="m-4">
-                                    {p.text}
-                                    </p>;
+                                className="m-4">{index + 1}. {p.text}</p>;
                             }) : "N/A"
                         } 
 
@@ -60,7 +58,7 @@ export default function Home() {
                                 return <div 
                                 key={index} 
                                 className="m-4">
-                                    <p className="m-2 text-gray-300">{d.definition}</p>
+                                    <p className="m-2 text-gray-300">{index + 1}. {d.definition}</p>
                                     <p className="m-2 ml-10 text-gray-500">{d.example}</p>
                                 </div>;
                             }) || "N/A"
