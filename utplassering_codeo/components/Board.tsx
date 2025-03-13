@@ -2,60 +2,31 @@ import { useEffect, useState } from "react";
 import { Square } from "./Square";
 import { saveJSON } from "@/functions/AI/saveJSON";
 import next from "next";
+import { normalizeState } from "@/functions/normalizeState";
+import { getBiasedMove } from "@/functions/AI/getBiasedMove";
+import { getRandomMove } from "@/functions/AI/getRandomMove";
+
 
 
 // Handle AI memory
 let aiMemory = JSON.parse(localStorage.getItem("aiMemory") || "{}");
 
-function updateMemory(gameStates: any[], winner: string, move: number) {
-    gameStates.forEach((entry) => {
-        if (!entry || !entry.gameState) return;
-        const key = JSON.stringify(entry.gameState);
-    
-        if (!aiMemory[key]) aiMemory[key] = {};
-        if (!aiMemory[key][move]) aiMemory[key][move] = { wins: 0, losses: 0 };
-    
-        if (winner === "X") aiMemory[key][move].wins += 1;
-        else if (winner === "O") aiMemory[key][move].losses += 1;
-    
-        saveJSON(aiMemory);
-      });
+function updateMemory(gameState: any[], winner: string, move: number) {
+  let key = JSON.stringify(gameState);
+  // Ensure that keys exist
+  if (!aiMemory[key]) aiMemory[key] = {};
+  if (!aiMemory[key][move]) aiMemory[key][move] = { wins: 0, losses: 0 };
+  aiMemory[key][move][winner === "X" ? "wins" : "losses"]++;
+
+  console.log("Memory before saving:", aiMemory); // Debugging
+  saveJSON(aiMemory); // Save the updated memory
+  
 }
 
-// Handle AI movement
 
-function getRandomMove(squares: any[]) {
-    const availableMoves = squares.map((val, idx) => (val === null ? idx : null)).filter(v => v !== null);
-    return availableMoves[Math.floor(Math.random() * availableMoves.length)];
-}
-function getBiasedMove(squares: any[]) {
-    const availableMoves = squares.map((val, idx) => (val === null ? idx : null)).filter(v => v !== null);
-  
-    const key = JSON.stringify(squares);
-
-    if (!aiMemory[key]) aiMemory[key] = {};
-    
-    // Initialize memory for available moves
-    let bestMove = availableMoves[0];
-    let bestScore = -Infinity;
-    
-    // Goes through all available moves and finds the one with the best score
-    availableMoves.forEach(move => {
-      if (!aiMemory[key][move]) aiMemory[key][move] = { wins: 0, losses: 0 };
-  
-      const score = aiMemory[key][move].wins - aiMemory[key][move].losses;
-
-      if (score > bestScore) {
-        bestScore = score;
-        bestMove = move;
-      }
-    });
-  
-    return bestMove;
-}
 
 function aiMove(squares: any[], aiChaos: number) {
-    const move =  Math.random() < aiChaos ? getRandomMove(squares) : getBiasedMove(squares);
+    const move =  Math.random() < aiChaos ? getRandomMove(squares) : getBiasedMove(squares, aiMemory);
     return move;
 }
 
@@ -91,6 +62,7 @@ type BoardVar = {
 
 export function Board({ xIsNext, squares, onPlay }: BoardVar) {
   
+  
     function handleClick(i: number) {
       if (calculateWinner(squares) || squares[i] || xIsNext) {
         return;
@@ -98,6 +70,10 @@ export function Board({ xIsNext, squares, onPlay }: BoardVar) {
 
       const nextSquares = squares.slice();
       nextSquares[i] = "O";
+
+      if (calculateWinner(nextSquares)) {
+        updateMemory(aiMemory["lastState"], "O", aiMemory["lastMove"]);
+      }
       onPlay(nextSquares);
     }
 
@@ -106,20 +82,21 @@ export function Board({ xIsNext, squares, onPlay }: BoardVar) {
     // Ai move
     useEffect(() => {
         if (!winner && xIsNext) {
-            console.log("AI move!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                let move = aiMove(squares, 0);
-                let nextSquares = squares.slice();
-                nextSquares[move] = "X";
-                console.log("AI move: ", move, "New state: ", nextSquares);
+            //console.log("AI move!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            let move = aiMove(squares, 0);
+            
+            aiMemory["lastMove"] = move;
+            aiMemory["lastState"] = squares;
+            saveJSON(aiMemory);
 
-                const newWinner = calculateWinner(nextSquares) as string | null;
-                console.log(newWinner, squares, nextSquares);
+            let nextSquares = squares.slice();
+            nextSquares[move] = "X";
 
-                if (newWinner) {
-                    console.log("AI Winner: ", newWinner);
-                    updateMemory(nextSquares, calculateWinner(nextSquares), move);
-                }
-                onPlay(nextSquares);
+            //console.log(newWinner, squares, nextSquares)
+            if (calculateWinner(nextSquares)) {
+                updateMemory(aiMemory["lastState"], calculateWinner(nextSquares), aiMemory["lastMove"]);
+            }
+            onPlay(nextSquares);
         }
     });
 
@@ -127,9 +104,7 @@ export function Board({ xIsNext, squares, onPlay }: BoardVar) {
     [`Our Winner is ${winner} !!!`,  winner === "X" ? "text-green-700" : "text-blue-700",winner === "X" ? "bg-green-400" : "bg-blue-400"] : 
     [`${xIsNext ? "X" : "O"}'s turn`, xIsNext ? "text-green-700" : "text-blue-700", "bg-gray-100"];
 
-    console.log("JSON: ", JSON.parse(localStorage.getItem("aiMemory") || "{}"));
-
-    
+    //console.log("JSON: ", JSON.parse(localStorage.getItem("aiMemory") || "{}"));
 
     return (
       <div className="">
