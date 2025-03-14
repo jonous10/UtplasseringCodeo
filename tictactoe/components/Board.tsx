@@ -11,13 +11,22 @@ import { getRandomMove } from "@/functions/AI/getRandomMove";
 // Handle AI memory
 let aiMemory = JSON.parse(localStorage.getItem("aiMemory") || "{}");
 
-function updateMemory(gameState: any[], winner: string, move: number) {
-  let key = JSON.stringify(gameState);
-  // Ensure that keys exist
-  if (!aiMemory[key]) aiMemory[key] = {};
-  if (!aiMemory[key][move]) aiMemory[key][move] = { wins: 0, losses: 0 };
-  aiMemory[key][move][winner === "X" ? "wins" : "losses"]++;
+if (!Array.isArray(aiMemory["lastMoves"])) aiMemory["lastMoves"] = [];
+if (!Array.isArray(aiMemory["lastStates"])) aiMemory["lastStates"] = [];
 
+
+function updateMemory(gameStates: any[][], winner: string, moves: number[]) {
+  gameStates.forEach((state, idx) => {
+    let key = JSON.stringify(state);
+    // Ensure that keys exist
+    if (!aiMemory[key]) aiMemory[key] = {};
+    if (!aiMemory[key][moves[idx]]) aiMemory[key][moves[idx]] = { wins: 0, losses: 0 };
+    aiMemory[key][moves[idx]][winner === "X" ? "wins" : "losses"]++;
+  });
+
+  aiMemory.lastMoves = [];
+  aiMemory.lastStates = [];
+  
   //console.log("Memory before saving:", aiMemory); // Debugging
   saveJSON(aiMemory); // Save the updated memory
   
@@ -61,8 +70,12 @@ type BoardVar = {
 }
 
 export function Board({ xIsNext, squares, onPlay }: BoardVar) {
-  
-  
+  // Check if all items in squares are null
+  if (squares.every((val) => val === null)) {
+    aiMemory.lastMoves = [];
+    aiMemory.lastStates = [];
+  }
+
     function handleClick(i: number) {
       if (calculateWinner(squares) || squares[i] || xIsNext) {
         return;
@@ -72,7 +85,7 @@ export function Board({ xIsNext, squares, onPlay }: BoardVar) {
       nextSquares[i] = "O";
 
       if (calculateWinner(nextSquares)) {
-        updateMemory(aiMemory["lastState"], "O", aiMemory["lastMove"]);
+        updateMemory(aiMemory["lastStates"], "O", aiMemory["lastMoves"]);
       }
       onPlay(nextSquares);
     }
@@ -80,25 +93,28 @@ export function Board({ xIsNext, squares, onPlay }: BoardVar) {
     const winner = calculateWinner(squares) as string | null;
 
     // Ai move
-    useEffect(() => {
+    //useEffect(() => {
         if (!winner && xIsNext) {
             //console.log("AI move!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             let move = aiMove(squares, 0);
             
-            aiMemory["lastMove"] = move;
-            aiMemory["lastState"] = squares;
+            aiMemory.lastMoves.push(move);
+            aiMemory.lastStates.push(squares);
             saveJSON(aiMemory);
 
             let nextSquares = squares.slice();
-            nextSquares[move] = "X";
+            if (move !== null) {
+              nextSquares[move] = "X";
+            }
 
             //console.log(newWinner, squares, nextSquares)
             if (calculateWinner(nextSquares)) {
-                updateMemory(aiMemory["lastState"], "X", aiMemory["lastMove"]);
+                updateMemory(aiMemory["lastStates"], "X", aiMemory["lastMoves"]);
+                console.log("AI WON!!!");
             }
             onPlay(nextSquares);
         }
-    });
+    //});
 
     let [status, statusColor, squareColor] = winner ? 
     [`Our Winner is ${winner} !!!`,  winner === "X" ? "text-green-700" : "text-blue-700",winner === "X" ? "bg-green-400" : "bg-blue-400"] : 
