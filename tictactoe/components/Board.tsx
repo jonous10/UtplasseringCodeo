@@ -18,7 +18,7 @@ function updateMemory(gameState: any[], winner: string, move: number) {
   if (!aiMemory[key][move]) aiMemory[key][move] = { wins: 0, losses: 0 };
   aiMemory[key][move][winner === "X" ? "wins" : "losses"]++;
 
-  console.log("Memory before saving:", aiMemory); // Debugging
+  //console.log("Memory before saving:", aiMemory); // Debugging
   saveJSON(aiMemory); // Save the updated memory
   
 }
@@ -104,7 +104,7 @@ export function Board({ xIsNext, squares, onPlay }: BoardVar) {
     [`Our Winner is ${winner} !!!`,  winner === "X" ? "text-green-700" : "text-blue-700",winner === "X" ? "bg-green-400" : "bg-blue-400"] : 
     [`${xIsNext ? "X" : "O"}'s turn`, xIsNext ? "text-green-700" : "text-blue-700", "bg-gray-100"];
 
-    //console.log("JSON: ", JSON.parse(localStorage.getItem("aiMemory") || "{}"));
+    console.log("JSON: ", JSON.parse(localStorage.getItem("aiMemory") || "{}"));
 
     return (
       <div className="">
