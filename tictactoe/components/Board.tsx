@@ -94,7 +94,7 @@ export function Board({ xIsNext, squares, onPlay }: BoardVar) {
 
             //console.log(newWinner, squares, nextSquares)
             if (calculateWinner(nextSquares)) {
-                updateMemory(aiMemory["lastState"], calculateWinner(nextSquares), aiMemory["lastMove"]);
+                updateMemory(aiMemory["lastState"], "X", aiMemory["lastMove"]);
             }
             onPlay(nextSquares);
         }
