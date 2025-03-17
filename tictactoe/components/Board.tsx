@@ -5,6 +5,7 @@ import next from "next";
 import { normalizeState } from "@/functions/normalizeState";
 import { getBiasedMove } from "@/functions/AI/getBiasedMove";
 import { getRandomMove } from "@/functions/AI/getRandomMove";
+import data from "../aiMemory/aiMemory.json"
 
 
 

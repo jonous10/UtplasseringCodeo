@@ -29,7 +29,6 @@ export function Game() {
   return (
     <div className="flex justify-center">
         <div className="">
-            <button onClick={() => saveJSON(JSON.parse("{}"))}>Reset AI memory</button>
             <div className="game-board">
                 <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
             </div>

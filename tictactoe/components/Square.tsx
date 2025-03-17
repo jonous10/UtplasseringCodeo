@@ -11,7 +11,7 @@ export function Square({ value, onSquareClick, squareColor }: SquareVar) {
     
     return (
       <button
-        className={`w-48 h-48 border-4 rounded-2xl m-4 text-8xl ${squareColor} ${squareTextColor} cursor-pointer`}
+        className={`w-48 h-48 border-4 rounded-2xl m-4 text-8xl ${squareColor} ${squareTextColor} cursor-pointer transition`}
         id={value}
         onClick={onSquareClick}
       >
