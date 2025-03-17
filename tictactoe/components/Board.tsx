@@ -93,10 +93,10 @@ export function Board({ xIsNext, squares, onPlay }: BoardVar) {
     const winner = calculateWinner(squares) as string | null;
 
     // Ai move
-    //useEffect(() => {
+    useEffect(() => {
         if (!winner && xIsNext) {
             //console.log("AI move!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            let move = aiMove(squares, 0);
+            let move = aiMove(squares, 0.4);
             
             aiMemory.lastMoves.push(move);
             aiMemory.lastStates.push(squares);
@@ -114,7 +114,7 @@ export function Board({ xIsNext, squares, onPlay }: BoardVar) {
             }
             onPlay(nextSquares);
         }
-    //});
+    });
 
     let [status, statusColor, squareColor] = winner ? 
     [`Our Winner is ${winner} !!!`,  winner === "X" ? "text-green-700" : "text-blue-700",winner === "X" ? "bg-green-400" : "bg-blue-400"] : 
