@@ -97,7 +97,7 @@ export function Board({ xIsNext, squares, onPlay }: BoardVar) {
     useEffect(() => {
         if (!winner && xIsNext) {
             //console.log("AI move!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            let move = aiMove(squares, 0.4);
+            let move = aiMove(squares, 0.5);
             
             aiMemory.lastMoves.push(move);
             aiMemory.lastStates.push(squares);
