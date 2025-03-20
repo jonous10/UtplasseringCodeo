@@ -41,7 +41,14 @@ export default function GameDetails({ name, appid }: GameDetailsProps) {
                             <p>{data.error || "error"}</p>
                         ) : (
                             <div>
+                                {data.discount && <>
+                                    <p className="font-bold m-2 opacity-45">{data.original_price} -{data.discount}%</p>
+                                    <p className="ml-5">↓</p>
+                                </>
+                                    
+                                }
                                 <p className="font-bold m-2">{data.price}</p>
+                                <Separator/>
                                 <p className="font-bold m-2">age {data.required_age}+</p>
                                 <Separator/>
                                 <p className="font-bold m-2">Categories : </p>
