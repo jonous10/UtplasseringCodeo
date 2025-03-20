@@ -3,6 +3,7 @@
 import { getAllGames, getGameDetails, getPlayerCount, getSteamGame } from "@/api/games";
 import { Button } from "@/components/ui/button";
 import GameDetails from "@/components/ui/game-details";
+import { GameSearchArea } from "@/components/ui/game-search-area";
 import Header from "@/components/ui/header";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
@@ -43,18 +44,7 @@ export default function Home() {
               SEARCH
             </Button>
             <p className="text-xs">{allGames.length} results</p>
-            <div className="flex flex-col items-center">
-              {allGames.length > 0
-                ? allGames.map((game) => (
-                  <div className="flex justify-between w-168 border-b border-gray-600 p-2" key={game.appid}>
-                  <GameDetails
-                  name={game.name}
-                  appid={`${game.appid}`}
-                  ></GameDetails>
-                </div>
-                  ))
-                : "No games found"}
-            </div>
+            <GameSearchArea searchedGames={allGames}/>
         </div>
     </div>
   );
