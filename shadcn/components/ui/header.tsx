@@ -13,21 +13,21 @@ export default function Header() {
                     <NavigationMenuList>
                         <NavigationMenuItem>
                             <Link
-                            href="https://www.vg.no/"
+                            href="http://localhost:3000"
                             legacyBehavior passHref
                             >
                                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                    VG
+                                    Home
                                 </NavigationMenuLink>
                             </Link>
                         </NavigationMenuItem>
                         <NavigationMenuItem>
                             <Link
-                            href="https://www.vg.no/"
+                            href="http://localhost:3000/steam-search"
                             legacyBehavior passHref
                             >
                                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                    VG
+                                    Steam Search
                                 </NavigationMenuLink>
                             </Link>
                         </NavigationMenuItem>
