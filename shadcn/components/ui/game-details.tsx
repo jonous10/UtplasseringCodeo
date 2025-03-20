@@ -30,7 +30,7 @@ export default function GameDetails({ name, appid }: GameDetailsProps) {
             className="m-2"
             onClick={() => setShouldFetch(true)}
             >{name}</PopoverTrigger>
-            <PopoverContent>
+            <PopoverContent className="m-4">
                 <div className="p-3">
                     <p className="font-bold">{name}</p>
                     <Separator/>
